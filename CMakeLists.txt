@@ -24,11 +24,11 @@ include_directories(src/tiger/lex)
 
 file(GLOB SLP_SOURCES "src/straightline/*.cc")
 
-# file(GLOB TIGER_SOURCES
-#         "src/tiger/symbol/*.cc"
-#         "src/tiger/absyn/*.cc"
-#         "src/tiger/errormsg/*.cc"
-#         "src/tiger/env/*.cc"
+file(GLOB TIGER_SOURCES
+        "src/tiger/symbol/*.cc"
+        "src/tiger/absyn/*.cc"
+        "src/tiger/errormsg/*.cc"
+        "src/tiger/env/*.cc"
 #         "src/tiger/escape/*.cc"
 #         "src/tiger/semant/*.cc"
 #         "src/tiger/frame/*.cc"
@@ -37,14 +37,14 @@ file(GLOB SLP_SOURCES "src/straightline/*.cc")
 #         "src/tiger/codegen/*.cc"
 #         "src/tiger/liveness/*.cc"
 #         "src/tiger/regalloc/*.cc"
-#         "src/tiger/output/*.cc"
-#         )
+        "src/tiger/output/*.cc"
+        )
 
 SET(TIGER_LEX_PARSE_SOURCES
         ${PROJECT_SOURCE_DIR}/src/tiger/lex/lex.cc
         ${PROJECT_SOURCE_DIR}/src/tiger/lex/scannerbase.h
-        #         ${PROJECT_SOURCE_DIR}/src/tiger/parse/parse.cc
-        #         ${PROJECT_SOURCE_DIR}/src/tiger/parse/parserbase.h
+        ${PROJECT_SOURCE_DIR}/src/tiger/parse/parse.cc
+        ${PROJECT_SOURCE_DIR}/src/tiger/parse/parserbase.h
         )
 
 SET_SOURCE_FILES_PROPERTIES(${TIGER_LEX_PARSE_SOURCES} GENERATED)
@@ -57,13 +57,13 @@ add_custom_command(
         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/src/tiger/lex
 )
 
-# Create custom command for bisonc++ (note the DEPENDS)
-# add_custom_command(
-#         OUTPUT ${PROJECT_SOURCE_DIR}/src/tiger/parse/parse.cc ${PROJECT_SOURCE_DIR}/src/tiger/parse/parserbase.h
-#         COMMAND bisonc++ tiger.y
-#         DEPENDS ${PROJECT_SOURCE_DIR}/src/tiger/parse/tiger.y
-#         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/src/tiger/parse
-# )
+Create custom command for bisonc++ (note the DEPENDS)
+add_custom_command(
+        OUTPUT ${PROJECT_SOURCE_DIR}/src/tiger/parse/parse.cc ${PROJECT_SOURCE_DIR}/src/tiger/parse/parserbase.h
+        COMMAND bisonc++ tiger.y
+        DEPENDS ${PROJECT_SOURCE_DIR}/src/tiger/parse/tiger.y
+        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/src/tiger/parse
+)
 
 # Create target for the lexer and the parser
 add_custom_target(
