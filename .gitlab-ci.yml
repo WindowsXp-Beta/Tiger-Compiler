@@ -1,7 +1,7 @@
 test_lab1:
   image: ipadsse302/tigerlabs_score_env
   tags:
-    - rdma;val;
+    - val runner docker executor
   stage: test
   script:
     - rm -rf scripts testdata
@@ -12,7 +12,7 @@ test_lab1:
 test_lab2:
   image: ipadsse302/tigerlabs_score_env
   tags:
-    - rdma;val;
+    - val runner docker executor
   stage: test
   script:
     - rm -rf scripts testdata
@@ -23,7 +23,7 @@ test_lab2:
 # test_lab3:
 #   image: ipadsse302/tigerlabs_score_env
 #   tags:
-#     - rdma;val;
+#     - val runner docker executor
 #   stage: test
 #   script:
 #     - rm -rf scripts testdata
@@ -34,7 +34,7 @@ test_lab2:
 # test_lab4:
 #   image: ipadsse302/tigerlabs_score_env
 #   tags:
-#     - rdma;val;
+#     - val runner docker executor
 #   stage: test
 #   script:
 #     - rm -rf scripts testdata
@@ -45,7 +45,7 @@ test_lab2:
 # test_all:
 #   image: ipadsse302/tigerlabs_score_env
 #   tags:
-#     - rdma;val;
+#     - val runner docker executor
 #   stage: test
 #   script:
 #     - rm -rf scripts testdata
