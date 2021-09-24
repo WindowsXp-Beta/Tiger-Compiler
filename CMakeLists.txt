@@ -57,7 +57,7 @@ add_custom_command(
         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/src/tiger/lex
 )
 
-Create custom command for bisonc++ (note the DEPENDS)
+# Create custom command for bisonc++ (note the DEPENDS)
 add_custom_command(
         OUTPUT ${PROJECT_SOURCE_DIR}/src/tiger/parse/parse.cc ${PROJECT_SOURCE_DIR}/src/tiger/parse/parserbase.h
         COMMAND bisonc++ tiger.y
