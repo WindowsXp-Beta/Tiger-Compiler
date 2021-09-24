@@ -31,7 +31,7 @@ need to code in some of the directories.
 
 3. Tiger compiler in C++ uses CMake instead of Makefile to compile and build the target.
 
-4. We've introduced lots of modern C++-style codes into tiger compiler, e.g., smart pointers, RAII, RTTI. To get familiar with the features of modern C++ and get recommendations for writing code in modern C++ style, please refer to [this doc](https://ipads.se.sjtu.edu.cn/courses/compilers/tiger-compiler-environment.html) on our course website.
+<!---4. We've introduced lots of modern C++-style codes into tiger compiler, e.g., smart pointers, RAII, RTTI. To get familiar with the features of modern C++ and get recommendations for writing code in modern C++ style, please refer to [this doc](https://ipads.se.sjtu.edu.cn/courses/compilers/tiger-compiler-cpp-style.html) on our course website.-->
 
 ## Installing Dependencies
 
@@ -85,22 +85,22 @@ make gradelabx
 ```
 or run the script manually
 ```bash
-./scripts/gradelabx.sh # e.g. `./gradelab1.sh`
+./scripts/grade.sh [lab1|lab2|lab3|lab4|lab5|lab6|all] # e.g. `./scripts/grade.sh lab1`
 ```
 
-You can test_ all the labs by
+You can test all the labs by
 ```bash
 make gradeall
 ```
 
 ## Submitting Your Labs
 
-Run `make register` and input your name in English and student ID. You can
-check it in the `.info_` file generated later.
+**Run `make register` and input your name in English and student ID.** You can
+check it in the `.info` file generated later.
 
 We are using CI in GitLab to grade your labs automatically. **So please make
 sure the `Enable shared runners for this project`
-under_ `Your GitLab repo - Settings - CI/CD` is turned on**.
+under `Your GitLab repo - Settings - CI/CD` is turned on**.
 
 Push your code to your GitLab repo
 ```bash
@@ -109,8 +109,8 @@ git commit -m "A message"
 git push
 ```
 
-Wait for a while and check the latest pipeline (`Your GitLab repo - CI/CD -
-Pipelines`) passed. Otherwise, you won't get a full score in your lab.
+**Wait for a while and check the latest pipeline (`Your GitLab repo - CI/CD -
+Pipelines`) passed. Otherwise, you won't get a full score in your lab.**
 
 ## Formatting Your Codes
 
@@ -137,4 +137,5 @@ You can read external documentations on our course website:
 
 - [Lab Assignments](https://ipads.se.sjtu.edu.cn/courses/compilers/labs.shtml)
 - [Environment Configuration of Tiger Compiler Labs](https://ipads.se.sjtu.edu.cn/courses/compilers/tiger-compiler-environment.html)
-- [Tiger Compiler in Modern C++ Style](https://ipads.se.sjtu.edu.cn/courses/compilers/tiger-compiler-cpp-style.html)
+<!---- [Tiger Compiler in Modern C++ Style](https://ipads.se.sjtu.edu.cn/courses/compilers/tiger-compiler-cpp-style.html)-->
+
