@@ -20,31 +20,31 @@ set(CMAKE_CXX_STANDARD 17)
 
 include_directories(src)
 include_directories(src/tiger/lex)
-include_directories(src/tiger/parse)
+# include_directories(src/tiger/parse)
 
 file(GLOB SLP_SOURCES "src/straightline/*.cc")
 
-file(GLOB TIGER_SOURCES
-        "src/tiger/symbol/*.cc"
-        "src/tiger/absyn/*.cc"
-        "src/tiger/errormsg/*.cc"
-        "src/tiger/env/*.cc"
-        "src/tiger/escape/*.cc"
-        "src/tiger/semant/*.cc"
-        "src/tiger/frame/*.cc"
-        "src/tiger/translate/*.cc"
-        "src/tiger/canon/*.cc"
-        "src/tiger/codegen/*.cc"
-        "src/tiger/liveness/*.cc"
-        "src/tiger/regalloc/*.cc"
-        "src/tiger/output/*.cc"
-        )
+# file(GLOB TIGER_SOURCES
+#         "src/tiger/symbol/*.cc"
+#         "src/tiger/absyn/*.cc"
+#         "src/tiger/errormsg/*.cc"
+#         "src/tiger/env/*.cc"
+#         "src/tiger/escape/*.cc"
+#         "src/tiger/semant/*.cc"
+#         "src/tiger/frame/*.cc"
+#         "src/tiger/translate/*.cc"
+#         "src/tiger/canon/*.cc"
+#         "src/tiger/codegen/*.cc"
+#         "src/tiger/liveness/*.cc"
+#         "src/tiger/regalloc/*.cc"
+#         "src/tiger/output/*.cc"
+#         )
 
 SET(TIGER_LEX_PARSE_SOURCES
         ${PROJECT_SOURCE_DIR}/src/tiger/lex/lex.cc
         ${PROJECT_SOURCE_DIR}/src/tiger/lex/scannerbase.h
-        ${PROJECT_SOURCE_DIR}/src/tiger/parse/parse.cc
-        ${PROJECT_SOURCE_DIR}/src/tiger/parse/parserbase.h
+        #         ${PROJECT_SOURCE_DIR}/src/tiger/parse/parse.cc
+        #         ${PROJECT_SOURCE_DIR}/src/tiger/parse/parserbase.h
         )
 
 SET_SOURCE_FILES_PROPERTIES(${TIGER_LEX_PARSE_SOURCES} GENERATED)
@@ -58,12 +58,12 @@ add_custom_command(
 )
 
 # Create custom command for bisonc++ (note the DEPENDS)
-add_custom_command(
-        OUTPUT ${PROJECT_SOURCE_DIR}/src/tiger/parse/parse.cc ${PROJECT_SOURCE_DIR}/src/tiger/parse/parserbase.h
-        COMMAND bisonc++ tiger.y
-        DEPENDS ${PROJECT_SOURCE_DIR}/src/tiger/parse/tiger.y
-        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/src/tiger/parse
-)
+# add_custom_command(
+#         OUTPUT ${PROJECT_SOURCE_DIR}/src/tiger/parse/parse.cc ${PROJECT_SOURCE_DIR}/src/tiger/parse/parserbase.h
+#         COMMAND bisonc++ tiger.y
+#         DEPENDS ${PROJECT_SOURCE_DIR}/src/tiger/parse/tiger.y
+#         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/src/tiger/parse
+# )
 
 # Create target for the lexer and the parser
 add_custom_target(
