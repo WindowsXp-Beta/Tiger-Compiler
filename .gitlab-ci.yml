@@ -42,6 +42,7 @@ test_lab3:
 #     - make gradelab4 | tee output.log
 #     - python3 upload.py
 # 
+
 # test_lab5:
 #  image: ipadsse302/tigerlabs_score_env
 #  tags:
@@ -64,6 +65,7 @@ test_lab3:
 #    - make gradelab6 | tee output.log
 #    - python3 upload.py
 #
+
 # test_all:
 #   image: ipadsse302/tigerlabs_score_env
 #   tags:
