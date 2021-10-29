@@ -506,6 +506,10 @@ public:
     name_and_ty_list_.push_front(name_and_ty);
     return this;
   }
+  NameAndTyList *Append(NameAndTy *name_and_ty) {
+    name_and_ty_list_.push_back(name_and_ty);
+    return this;
+  }
   [[nodiscard]] const std::list<NameAndTy *> &GetList() const {
     return name_and_ty_list_;
   }
