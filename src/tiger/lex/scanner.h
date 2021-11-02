@@ -17,8 +17,11 @@ public:
       : ScannerBase(std::cin, out), comment_level_(1), char_pos_(1),
         errormsg_(std::make_unique<err::ErrorMsg>(fname)) {
     switchStreams(errormsg_->infile_, out);
+    annotation_count = 0;
   }
-
+  
+  std::string string_var;
+  int annotation_count;
   /**
    * Output an error
    * @param message error message
