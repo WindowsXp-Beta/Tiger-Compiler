@@ -20,7 +20,7 @@ class Symbol {
   template <typename ValueType> friend class Table;
 
 public:
-  static Symbol *UniqueSymbol(std::string_view);
+  static Symbol *UniqueSymbol(std::string_view);//given an string return the corresponding Symbol to ensure unique Symbol
   [[nodiscard]] std::string Name() const { return name_; }
 
 private:
@@ -32,7 +32,7 @@ private:
 };
 
 template <typename ValueType>
-class Table : public tab::Table<Symbol, ValueType> {
+class Table : public tab::Table<Symbol, ValueType> {//integrate an undo stack
 public:
   Table() : tab::Table<Symbol, ValueType>() {}
   void BeginScope();

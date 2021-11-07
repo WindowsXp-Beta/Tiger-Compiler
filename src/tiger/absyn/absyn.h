@@ -84,6 +84,7 @@ protected:
   explicit Var(int pos) : pos_(pos) {}
 };
 
+// lvalue
 class SimpleVar : public Var {
 public:
   sym::Symbol *sym_;
@@ -95,6 +96,7 @@ public:
                        err::ErrorMsg *errormsg) const override;
 };
 
+// lvalue.id
 class FieldVar : public Var {
 public:
   Var *var_;
@@ -109,6 +111,7 @@ public:
                        err::ErrorMsg *errormsg) const override;
 };
 
+// lvalue[exp]
 class SubscriptVar : public Var {
 public:
   Var *var_;
@@ -417,6 +420,7 @@ protected:
   explicit Ty(int pos) : pos_(pos) {}
 };
 
+// ty -> typeid
 class NameTy : public Ty {
 public:
   sym::Symbol *name_;
@@ -429,6 +433,7 @@ public:
                        err::ErrorMsg *errormsg) const override;
 };
 
+// ty -> { tyfields }
 class RecordTy : public Ty {
 public:
   FieldList *record_;
@@ -441,6 +446,7 @@ public:
                        err::ErrorMsg *errormsg) const override;
 };
 
+// ty -> array of typeid
 class ArrayTy : public Ty {
 public:
   sym::Symbol *array_;
