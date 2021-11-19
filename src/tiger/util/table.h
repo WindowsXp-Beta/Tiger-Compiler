@@ -28,7 +28,7 @@ protected:
   };
 
   Binder *table_[TABSIZE];
-  KeyType *top_;
+  KeyType *top_;//integrate the stack into the Binder
 };
 
 template <typename KeyType, typename ValueType>

@@ -95,6 +95,7 @@ protected:
   explicit Var(int pos) : pos_(pos) {}
 };
 
+// lvalue
 class SimpleVar : public Var {
 public:
   sym::Symbol *sym_;
@@ -110,6 +111,7 @@ public:
   void Traverse(esc::EscEnvPtr env, int depth) override;
 };
 
+// lvalue.id
 class FieldVar : public Var {
 public:
   Var *var_;
@@ -128,6 +130,7 @@ public:
   void Traverse(esc::EscEnvPtr env, int depth) override;
 };
 
+// lvalue[exp]
 class SubscriptVar : public Var {
 public:
   Var *var_;
@@ -526,6 +529,7 @@ protected:
   explicit Ty(int pos) : pos_(pos) {}
 };
 
+// ty -> typeid
 class NameTy : public Ty {
 public:
   sym::Symbol *name_;
@@ -540,6 +544,7 @@ public:
                       err::ErrorMsg *errormsg) const override;
 };
 
+// ty -> { tyfields }
 class RecordTy : public Ty {
 public:
   FieldList *record_;
@@ -554,6 +559,7 @@ public:
                       err::ErrorMsg *errormsg) const override;
 };
 
+// ty -> array of typeid
 class ArrayTy : public Ty {
 public:
   sym::Symbol *array_;
@@ -691,6 +697,10 @@ public:
 
   NameAndTyList *Prepend(NameAndTy *name_and_ty) {
     name_and_ty_list_.push_front(name_and_ty);
+    return this;
+  }
+  NameAndTyList *Append(NameAndTy *name_and_ty) {
+    name_and_ty_list_.push_back(name_and_ty);
     return this;
   }
   [[nodiscard]] const std::list<NameAndTy *> &GetList() const {
