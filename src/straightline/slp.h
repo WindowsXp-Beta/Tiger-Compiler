@@ -59,13 +59,18 @@ class Exp {
   // TODO: you'll have to add some definitions here (lab1).
   // Hints: You may add interfaces like `int MaxArgs()`,
   //        and ` IntAndTable *Interp(Table *)`
+ public:
+  virtual int MaxArgs() const = 0;
+  virtual IntAndTable *Interp(Table *) const = 0;
 };
 
 class IdExp : public Exp {
  public:
   explicit IdExp(std::string id) : id(std::move(id)) {}
   // TODO: you'll have to add some definitions here (lab1).
-
+  int MaxArgs() const override;
+  IntAndTable *Interp(Table *t) const override;
+  
  private:
   std::string id;
 };
@@ -74,7 +79,8 @@ class NumExp : public Exp {
  public:
   explicit NumExp(int num) : num(num) {}
   // TODO: you'll have to add some definitions here.
-
+  int MaxArgs() const override;
+  IntAndTable *Interp(Table *t) const override;
  private:
   int num;
 };
@@ -83,6 +89,8 @@ class OpExp : public Exp {
  public:
   OpExp(Exp *left, BinOp oper, Exp *right)
       : left(left), oper(oper), right(right) {}
+  int MaxArgs() const override;
+  IntAndTable *Interp(Table *t) const override;
 
  private:
   Exp *left;
@@ -93,8 +101,10 @@ class OpExp : public Exp {
 class EseqExp : public Exp {
  public:
   EseqExp(Stm *stm, Exp *exp) : stm(stm), exp(exp) {}
+  int MaxArgs() const override;
+  IntAndTable *Interp(Table *t) const override;
 
- private:
+private:
   Stm *stm;
   Exp *exp;
 };
@@ -104,12 +114,19 @@ class ExpList {
   // TODO: you'll have to add some definitions here (lab1).
   // Hints: You may add interfaces like `int MaxArgs()`, `int NumExps()`,
   //        and ` IntAndTable *Interp(Table *)`
+  virtual int MaxArgs() const = 0;
+  virtual int NumExps() const = 0;
+  virtual IntAndTable *Interp(Table *) const = 0;
 };
 
 class PairExpList : public ExpList {
  public:
   PairExpList(Exp *exp, ExpList *tail) : exp(exp), tail(tail) {}
   // TODO: you'll have to add some definitions here (lab1).
+  int MaxArgs() const override;
+  int NumExps() const override;
+  IntAndTable *Interp(Table *t) const override;
+
  private:
   Exp *exp;
   ExpList *tail;
@@ -119,6 +136,9 @@ class LastExpList : public ExpList {
  public:
   LastExpList(Exp *exp) : exp(exp) {}
   // TODO: you'll have to add some definitions here (lab1).
+  int MaxArgs() const override;
+  int NumExps() const override;
+  IntAndTable *Interp(Table *t) const override;
  private:
   Exp *exp;
 };
