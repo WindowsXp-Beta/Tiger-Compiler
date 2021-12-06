@@ -33,13 +33,13 @@ class ExpList;
 class StmList;
 
 enum BinOp {
-  PLUS_OP,
-  MINUS_OP,
-  MUL_OP,
-  DIV_OP,
-  AND_OP,
-  OR_OP,
-  LSHIFT_OP,
+  PLUS_OP,// +
+  MINUS_OP,// -
+  MUL_OP,// *
+  DIV_OP,// /
+  AND_OP,// &
+  OR_OP,// |
+  LSHIFT_OP,// 
   RSHIFT_OP,
   ARSHIFT_OP,
   XOR_OP,
@@ -47,12 +47,12 @@ enum BinOp {
 };
 
 enum RelOp {
-  EQ_OP,
-  NE_OP,
-  LT_OP,
-  GT_OP,
-  LE_OP,
-  GE_OP,
+  EQ_OP,// =
+  NE_OP,// <>
+  LT_OP,// <
+  GT_OP,// >
+  LE_OP,// <=
+  GE_OP,// >=
   ULT_OP,
   ULE_OP,
   UGT_OP,

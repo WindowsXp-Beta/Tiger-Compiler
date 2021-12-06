@@ -9,6 +9,7 @@
 #include "tiger/errormsg/errormsg.h"
 #include "tiger/frame/frame.h"
 #include "tiger/semant/types.h"
+#include "tiger/frame/x64frame.h"
 
 namespace tr {
 
@@ -32,14 +33,30 @@ public:
   Level *parent_;
 
   /* TODO: Put your lab5 code here */
+  Level() = default;
+  Level(Level *parent, temp::Label *name, std::list<bool> *formals) :
+    parent_(parent)
+  {
+    // param1: static link
+    if (formals != nullptr) formals->push_front(true);
+    frame_ = new frame::X64Frame(name, formals);
+  }
 };
 
 class ProgTr {
 public:
 
   // TODO: Put your lab5 code here */
-  ProgTr(std::unique_ptr<absyn::AbsynTree> absyn_tree, std::unique_ptr<err::ErrorMsg> errormsg)
-      : absyn_tree_(std::move(absyn_tree)), errormsg_(std::move(errormsg)) {}
+  ProgTr(std::unique_ptr<absyn::AbsynTree> absyn_tree, std::unique_ptr<err::ErrorMsg> errormsg) :
+    absyn_tree_(std::move(absyn_tree)),
+    errormsg_(std::move(errormsg)),
+    tenv_(new env::TEnv),
+    venv_(new env::VEnv) {
+      FillBaseVEnv();
+      FillBaseTEnv();
+      auto main_label = temp::LabelFactory::NamedLabel("main");
+      main_level_.reset(new tr::Level(nullptr, main_label, nullptr));
+    }
   /**
    * Translate IR tree
    */

@@ -4,6 +4,7 @@
 #include <list>
 #include <memory>
 #include <string>
+#include <deque>
 
 #include "tiger/frame/temp.h"
 #include "tiger/translate/tree.h"
@@ -71,13 +72,25 @@ protected:
 class Access {
 public:
   /* TODO: Put your lab5 code here */
-  
-  virtual ~Access() = default;
-  
+  virtual tree::Exp *ToExp(tree::Exp *framePtr) const = 0;
+  virtual ~Access() = default;  
 };
 
 class Frame {
   /* TODO: Put your lab5 code here */
+public:
+  int current_stack_ptr;
+  temp::Label *label;
+  std::deque<frame::Access *> *formals_;
+  std::list<tree::Stm *> view_shift;
+
+  Frame(temp::Label *name, std::list<bool> *formals) : current_stack_ptr(-8), label(name) {
+    formals_ = new std::deque<frame::Access *>;
+  }
+  virtual ~Frame() {
+    delete formals_;
+  }
+  virtual Access *AllocLocal(bool isEscape) = 0;
 };
 
 /**
@@ -132,7 +145,9 @@ private:
 };
 
 /* TODO: Put your lab5 code here */
+tree::Exp *ExternalCall(std::string fun, tree::ExpList *args);
 
+ProcFrag *ProcEntryExit1(frame::Frame *, tree::Stm *);
 } // namespace frame
 
 #endif

@@ -277,7 +277,7 @@ type::Ty *LetExp::SemAnalyze(env::VEnvPtr venv, env::TEnvPtr tenv,
   type::Ty *result;
   if(!body_) result = type::VoidTy::Instance();
   else result = body_->SemAnalyze(venv, tenv, labelcount, errormsg);
-  //The result of LetExp is the last expression of body
+  // The result of LetExp is the last expression of body
 
   tenv->EndScope();
   venv->EndScope();

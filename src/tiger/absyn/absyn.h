@@ -35,16 +35,16 @@ class DecList;
 class EFieldList;
 
 enum Oper {
-  PLUS_OP,
-  MINUS_OP,
-  TIMES_OP,
-  DIVIDE_OP,
-  EQ_OP,
-  NEQ_OP,
-  LT_OP,
-  LE_OP,
-  GT_OP,
-  GE_OP,
+  PLUS_OP,// +
+  MINUS_OP,// -
+  TIMES_OP,// *
+  DIVIDE_OP,// /
+  EQ_OP,// =
+  NEQ_OP,// <>
+  LT_OP,// <
+  LE_OP,// <=
+  GT_OP,// >
+  GE_OP,// >=
   ABSYN_OPER_COUNT,
 };
 
