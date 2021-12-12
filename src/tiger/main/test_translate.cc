@@ -47,13 +47,6 @@ int main(int argc, char **argv) {
       tr::ProgTr prog_tr(std::move(absyn_tree), std::move(errormsg));
       prog_tr.Translate();
       errormsg = prog_tr.TransferErrormsg();
-      printf("done!\n");
-      for (auto frag : frags->GetList()) {
-        frame::ProcFrag *proc_frag;
-        if (proc_frag = dynamic_cast<frame::ProcFrag *>(frag)) {
-          proc_frag->body_->Print(stderr, 0);
-        }
-      }
     }
 
     if (errormsg->AnyErrors())
