@@ -54,7 +54,7 @@ public:
     venv_(new env::VEnv) {
       FillBaseVEnv();
       FillBaseTEnv();
-      auto main_label = temp::LabelFactory::NamedLabel("main");
+      auto main_label = temp::LabelFactory::NamedLabel("tigermain");
       main_level_.reset(new tr::Level(nullptr, main_label, nullptr));
     }
   /**

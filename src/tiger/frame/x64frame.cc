@@ -1,13 +1,27 @@
 #include "tiger/frame/x64frame.h"
+#include <map>
+#include <sstream>
 
 extern frame::RegManager *reg_manager;
 
 namespace frame {
 /* TODO: Put your lab5 code here */
 X64RegManager::X64RegManager() {
+  auto x64_reg = std::map<int, std::string *>{
+   {0, new std::string("%rax")}, {1, new std::string("%rbx")},
+   {2, new std::string("%rcx")}, {3, new std::string("%rdx")},
+   {4, new std::string("%rsi")}, {5, new std::string("%rdi")},
+   {6, new std::string("%rbp")}, {7, new std::string("%rsp")},
+   {8, new std::string("%r8")}, {9, new std::string("%r9")},
+   {10, new std::string("%r10")}, {11, new std::string("%r11")},
+   {12, new std::string("%r12")}, {13, new std::string("%r13")},
+   {14, new std::string("%r14")}
+  };
   for (int i = 0; i < 16; i++) {
-      regs_.push_back(temp::TempFactory::NewTemp());
-    }
+    auto new_temp = temp::TempFactory::NewTemp();
+    regs_.push_back(new_temp);
+    temp_map_->Enter(new_temp, x64_reg[i]);
+  }
 }
 
 temp::TempList *X64RegManager::Registers() {
@@ -19,36 +33,28 @@ temp::TempList *X64RegManager::Registers() {
 }
 
 temp::TempList *X64RegManager::ArgRegs() {
-  auto arg_regs = new temp::TempList();
-  arg_regs->Append(regs_[5]);
-  arg_regs->Append(regs_[4]);
-  arg_regs->Append(regs_[3]);
-  arg_regs->Append(regs_[2]);
-  arg_regs->Append(regs_[8]);
-  arg_regs->Append(regs_[9]);
-  return arg_regs;
+  return new temp::TempList{
+    regs_[5], regs_[4], regs_[3], regs_[2], regs_[8], regs_[9]
+  };
 }
 
 temp::TempList *X64RegManager::CalleeSaves() {
-  auto callee_saves_regs = new temp::TempList();
-  callee_saves_regs->Append(regs_[1]);
-  callee_saves_regs->Append(regs_[6]);
-  callee_saves_regs->Append(regs_[12]);
-  callee_saves_regs->Append(regs_[13]);
-  callee_saves_regs->Append(regs_[14]);
-  callee_saves_regs->Append(regs_[15]);
-  return callee_saves_regs;
+  return new temp::TempList{
+    regs_[1], regs_[6], regs_[12], regs_[13], regs_[14], regs_[15]
+  };
 }
 
 temp::TempList *X64RegManager::CallerSaves() {
-  auto caller_saves_regs = new temp::TempList();
-  caller_saves_regs->Append(regs_[9]);
-  caller_saves_regs->Append(regs_[10]);
-  return caller_saves_regs;
+  return new temp::TempList{
+    regs_[9], regs_[10]
+  };
 }
 
 temp::TempList *X64RegManager::ReturnSink() {
-  return nullptr;
+  auto temp_list = CalleeSaves();
+  temp_list->Append(StackPointer());
+  temp_list->Append(ReturnValue());
+  return temp_list;
 }
 
 int X64RegManager::WordSize() {
@@ -57,6 +63,11 @@ int X64RegManager::WordSize() {
 
 temp::Temp *X64RegManager::FramePointer() {
   return regs_[6];
+  // change the return value from %rbp to %rsp 
+  // so we don't need to change previous invocation
+  // Above are bullshit...
+  // otherwise it will cause previous call to StackPointer
+  // also match the judge case like(some_reg == reg->FramePointer())
 }
 
 temp::Temp *X64RegManager::StackPointer() {
@@ -107,7 +118,7 @@ X64Frame::X64Frame(temp::Label *name, std::list<bool> *formals) :
               new tree::BinopExp(
                 tree::BinOp::PLUS_OP,
                 frame_ptr,
-                new tree::ConstExp(reg_manager->WordSize() * (i - 6))
+                new tree::ConstExp(reg_manager->WordSize() * (i + 1 /* skip the return address */ - 6))
               )
             )
           );
@@ -147,6 +158,31 @@ ProcFrag *ProcEntryExit1(frame::Frame *frame, tree::Stm *stm) {
     stm = new tree::SeqStm(seq_stm, stm);
   }
   return new ProcFrag(stm, frame);
+}
+
+assem::InstrList *ProcEntryExit2(assem::InstrList *body) {
+  body->Append(
+    new assem::OperInstr(
+      "", nullptr,
+      reg_manager->ReturnSink(),
+      nullptr
+    )
+  );
+  return body;
+}
+
+assem::Proc *ProcEntryExit3(frame::Frame *frame, assem::InstrList *body) {
+  std::ostringstream prologue;
+  int framesize = -(frame->current_stack_ptr + reg_manager->WordSize());
+  prologue << ".set " << frame->label->Name() << "_framesize, " << framesize << "\n";
+  prologue << frame->label->Name() << ":\n";
+  prologue << "subq $" << framesize << ",%rsp\n";
+  std::ostringstream epilogue;
+  epilogue << "addq $" << framesize << ",%rsp\n";
+  epilogue << "retq\n";
+  return new assem::Proc(
+    prologue.str(), body, epilogue.str()
+  );
 }
 
 /* TODO: Put your lab5 code here */
