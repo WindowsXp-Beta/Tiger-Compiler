@@ -137,7 +137,7 @@ tree::Exp *StaticLink(Level *current, Level *target) {
   tree::Exp *frame_ptr = new tree::TempExp(reg_manager->FramePointer());
   while (current != target) {
     frame_ptr = current->frame_->formals_->at(0)->ToExp(frame_ptr);
-    //static link is always the first formal parameters
+    //static link is always the first formal parameter
     current = current->parent_;
   }
   return frame_ptr;
