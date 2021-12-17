@@ -57,6 +57,14 @@ temp::TempList *X64RegManager::ReturnSink() {
   return temp_list;
 }
 
+temp::TempList *X64RegManager::AllWithoutRsp() {
+  return new temp::TempList{
+    regs_[0], regs_[1], regs_[2], regs_[3], regs_[4],
+    regs_[5], regs_[6], regs_[8], regs_[9], regs_[10],
+    regs_[11], regs_[12], regs_[13], regs_[14]
+  };
+}
+
 int X64RegManager::WordSize() {
   return 8;
 }

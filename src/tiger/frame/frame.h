@@ -54,6 +54,11 @@ public:
   [[nodiscard]] virtual temp::TempList *ReturnSink() = 0;
 
   /**
+   * For constructing interference map
+   */
+  [[nodiscard]] virtual temp::TempList *AllWithoutRsp() = 0;
+
+  /**
    * Get word size
    */
   [[nodiscard]] virtual int WordSize() = 0;

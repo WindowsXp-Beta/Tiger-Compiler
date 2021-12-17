@@ -63,8 +63,10 @@ class TempList {
 public:
   explicit TempList(Temp *t) : temp_list_({t}) {}
   TempList(std::initializer_list<Temp *> list) : temp_list_(list) {}
+  TempList(const std::list<Temp *>& other) : temp_list_(other) {}
   TempList() = default;
   void Append(Temp *t) { temp_list_.push_back(t); }
+  void Remove(Temp *t) { temp_list_.remove(t); }
   [[nodiscard]] Temp *NthTemp(int i) const;
   [[nodiscard]] const std::list<Temp *> &GetList() const { return temp_list_; }
 
