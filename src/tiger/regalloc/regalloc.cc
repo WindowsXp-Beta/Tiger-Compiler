@@ -128,7 +128,6 @@ void RegAllocator::DecrementDegree(graph::Node<temp::Temp> *node) {
       freezeWorkList.insert(node);
     } else {
       if (std::find(selectStack.begin(), selectStack.end(),node) != selectStack.end()) {
-        printf("replicate 1!");
         exit(1);
       }
       simplifyWorkList.insert(node);
@@ -170,7 +169,6 @@ void RegAllocator::AddWorkList( graph::Node<temp::Temp> *node){
     freezeWorkList.erase(node);
      if (std::find(selectStack.begin(), selectStack.end(),node) != selectStack.end())
       {
-        printf("replicate 2!");
         exit(1);
       }
     simplifyWorkList.insert(node);
@@ -282,7 +280,6 @@ void RegAllocator::FreezeMoves(graph::Node<temp::Temp> *u) {
       freezeWorkList.erase(v);
        if (std::find(selectStack.begin(), selectStack.end(),v) != selectStack.end())
       {
-        printf("replicate 3!");
         exit(1);
       }
       simplifyWorkList.insert(v);
@@ -295,7 +292,6 @@ void RegAllocator::Freeze() {
   freezeWorkList.erase(node);
    if (std::find(selectStack.begin(), selectStack.end(),node) != selectStack.end())
       {
-        printf("replicate 4!");
         exit(1);
       }
   simplifyWorkList.insert(node);
@@ -315,13 +311,11 @@ void RegAllocator::SelectSpill() {
     }
   }
   if (!chosen) {
-    printf("no chosen here!\n");
     exit(1);
   }
   spillWorkList.erase(chosen);
    if (std::find(selectStack.begin(), selectStack.end(),chosen) != selectStack.end())
       {
-        printf("replicate 5!");
         exit(1);
       }
   simplifyWorkList.insert(chosen);
@@ -375,7 +369,6 @@ cg::AssemInstr *RegAllocator::RewriteProgram(frame::Frame *frame, assem::InstrLi
         src = ((assem::OperInstr *)(*p))->src_;
         dst = ((assem::OperInstr *)(*p))->dst_;
       } else {
-        printf("error ocurred!");
         exit(1);
       }
       if (src && src->Contain(spilledTemp) && dst && dst->Contain(spilledTemp)) {
@@ -449,45 +442,24 @@ void RegAllocator::RegAlloc(){
   cfg->AssemFlowGraph();
   liveness=new live::LiveGraphFactory(cfg->GetFlowGraph());
   liveness->Liveness();
-  printf("liveness done!\n");
-  liveness->GetLiveGraph().interf_graph->Show(
-    stderr,
-    liveness->GetLiveGraph().interf_graph->Nodes(),
-    [](temp::Temp *t) {printf("nodeinfo:%d\n",t->Int());}
-  );
   Build();
-  printf("finish build\n");
   MakeWorklist();
-  printf("finish makeworklist\n");
   do {
     if (!simplifyWorkList.empty()) {
-      // printf("enter 1\n");
       Simplify();
-      // printf("done 1\n");
     } else if (workListMoves->GetList().size()) {
-      // printf("enter 2\n");
       Coalesce();
-      // printf("done 2\n");
     } else if (!freezeWorkList.empty()) {
-      // printf("enter 3\n");
       Freeze();
-      // printf("done 3\n");
     } else if (!spillWorkList.empty()) {
-      // printf("enter 4\n");
       SelectSpill();
-      // printf("done 4\n");
     }
   } while (
     !simplifyWorkList.empty() || workListMoves->GetList().size() 
     || !freezeWorkList.empty() || !spillWorkList.empty());
 
-  printf("finish 4 step\n");
   AssignColors();
-  printf("finish assigncolors\n");
   if (!spilledNodes.empty()) {
-    for (auto ns:spilledNodes) {
-      printf("spill nodes:%d\n",ns->NodeInfo()->Int());
-    }
     cg::AssemInstr *il = RewriteProgram(frame_, asi_->GetInstrList());
     std::unique_ptr<cg::AssemInstr> il2=std::unique_ptr<cg::AssemInstr>(il);
     il2->Print(stderr,co);

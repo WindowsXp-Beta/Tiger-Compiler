@@ -240,9 +240,7 @@ void LiveGraphFactory::InterfGraph() {
 
 void LiveGraphFactory::Liveness() {
   LiveMap();
-  printf("livemap done\n");
   InterfGraph();
-  printf("interfgraph done\n");
 }
 
 } // namespace live
