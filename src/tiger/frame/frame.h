@@ -70,6 +70,12 @@ public:
   [[nodiscard]] virtual temp::Temp *ReturnValue() = 0;
 
   temp::Map *temp_map_;
+  std::deque<std::string> colors = {
+    "%rax", "%rbx", "%rcx", "%rdx", "%rsi",
+    "%rdi", "%rbp", "%r8", "%r9", "%r10",
+    "%r11", "%r12", "%r13", "%r14", "%r15"
+  };
+
 protected:
   std::vector<temp::Temp *> regs_;
 };

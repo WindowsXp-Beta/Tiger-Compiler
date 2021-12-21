@@ -20,6 +20,7 @@ using IGraphPtr = graph::Graph<temp::Temp>*;
 class MoveList {
 public:
   MoveList() = default;
+  MoveList(const std::list<std::pair<INodePtr, INodePtr>> &move_list) : move_list_(move_list) {}
 
   [[nodiscard]] const std::list<std::pair<INodePtr, INodePtr>> &
   GetList() const {
@@ -31,6 +32,7 @@ public:
   void Prepend(INodePtr src, INodePtr dst) {
     move_list_.emplace_front(src, dst);
   }
+  bool Empty() { return move_list_.empty(); }
   MoveList *Union(MoveList *list);
   MoveList *Intersect(MoveList *list);
 
@@ -41,11 +43,9 @@ private:
 struct LiveGraph {
   IGraphPtr interf_graph;
   MoveList *moves;
-  std::map<temp::Temp *, double> * priority;
+
   LiveGraph(IGraphPtr interf_graph, MoveList *moves)
-      : interf_graph(interf_graph), moves(moves) {
-        priority=new std::map<temp::Temp *, double>();
-      }
+      : interf_graph(interf_graph), moves(moves) {}
 };
 
 class LiveGraphFactory {
@@ -53,18 +53,13 @@ public:
   explicit LiveGraphFactory(fg::FGraphPtr flowgraph)
       : flowgraph_(flowgraph), live_graph_(new IGraph(), new MoveList()),
         in_(std::make_unique<graph::Table<assem::Instr, temp::TempList>>()),
-        out_(std::make_unique<graph::Table<assem::Instr, temp::TempList>>()),
-        temp_node_map_(new tab::Table<temp::Temp, INode>()) {}
+        out_(std::make_unique<graph::Table<assem::Instr, temp::TempList>>()) {}
+        // temp_node_map_(new tab::Table<temp::Temp, INode>())
   void Liveness();
-  LiveGraph GetLiveGraph() { return live_graph_; }
-  tab::Table<temp::Temp, INode> *GetTempNodeMap() { return temp_node_map_; }
-  graph::Node<temp::Temp> *GetNode(temp::Temp *temp){
-    //自动加入temp_node_map_
-    if (!temp_node_map_->Look(temp)) {
-      temp_node_map_->Enter(temp,live_graph_.interf_graph->NewNode(temp));
-  }
-  return temp_node_map_->Look(temp);
-  };
+  void ShowInOut();
+  LiveGraph *GetLiveGraph() { return &live_graph_; }
+  // tab::Table<temp::Temp, INode> *GetTempNodeMap() { return temp_node_map_; }
+  const std::map<temp::Temp *, INodePtr> &GetTempNodeMap() { return temp_node_map_; }
 
 private:
   fg::FGraphPtr flowgraph_;
@@ -72,7 +67,8 @@ private:
 
   std::unique_ptr<graph::Table<assem::Instr, temp::TempList>> in_;
   std::unique_ptr<graph::Table<assem::Instr, temp::TempList>> out_;
-  tab::Table<temp::Temp, INode> *temp_node_map_;
+  // tab::Table<temp::Temp, INode> *temp_node_map_;
+  std::map<temp::Temp *, INodePtr> temp_node_map_;
 
   void LiveMap();
   void InterfGraph();

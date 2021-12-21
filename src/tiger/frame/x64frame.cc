@@ -15,7 +15,7 @@ X64RegManager::X64RegManager() {
    {8, new std::string("%r8")}, {9, new std::string("%r9")},
    {10, new std::string("%r10")}, {11, new std::string("%r11")},
    {12, new std::string("%r12")}, {13, new std::string("%r13")},
-   {14, new std::string("%r14")}
+   {14, new std::string("%r14")}, {15, new std::string("%r15")}
   };
   for (int i = 0; i < 16; i++) {
     auto new_temp = temp::TempFactory::NewTemp();
@@ -39,14 +39,15 @@ temp::TempList *X64RegManager::ArgRegs() {
 }
 
 temp::TempList *X64RegManager::CalleeSaves() {
-  return new temp::TempList{
+  static auto callee_saves = new temp::TempList{
     regs_[1], regs_[6], regs_[12], regs_[13], regs_[14], regs_[15]
   };
+  return callee_saves;
 }
 
 temp::TempList *X64RegManager::CallerSaves() {
   return new temp::TempList{
-    regs_[9], regs_[10]
+    regs_[0], regs_[10], regs_[11], regs_[5], regs_[4], regs_[3], regs_[2], regs_[8], regs_[9]
   };
 }
 
@@ -58,11 +59,12 @@ temp::TempList *X64RegManager::ReturnSink() {
 }
 
 temp::TempList *X64RegManager::AllWithoutRsp() {
-  return new temp::TempList{
+  static auto all_without_rsp = new temp::TempList{
     regs_[0], regs_[1], regs_[2], regs_[3], regs_[4],
     regs_[5], regs_[6], regs_[8], regs_[9], regs_[10],
-    regs_[11], regs_[12], regs_[13], regs_[14]
+    regs_[11], regs_[12], regs_[13], regs_[14], regs_[15]
   };
+  return all_without_rsp;
 }
 
 int X64RegManager::WordSize() {
@@ -171,7 +173,8 @@ ProcFrag *ProcEntryExit1(frame::Frame *frame, tree::Stm *stm) {
 assem::InstrList *ProcEntryExit2(assem::InstrList *body) {
   body->Append(
     new assem::OperInstr(
-      "", nullptr,
+      "",
+      new temp::TempList(),
       reg_manager->ReturnSink(),
       nullptr
     )

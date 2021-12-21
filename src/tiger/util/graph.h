@@ -100,11 +100,12 @@ public:
   bool Contain(Node<T> *n);
 
   // Put list b at the back of list a and return the concatenated list
-  void CatList(NodeList<T> *nl);
+  NodeList<T> *CatList(NodeList<T> *nl);
   void DeleteNode(Node<T> *n);
   void Clear() { node_list_.clear(); }
   void Prepend(Node<T> *n) { node_list_.push_front(n); }
   void Append(Node<T> *n) { node_list_.push_back(n); }
+  bool Empty() { return node_list_.empty(); }
 
   // Set operation on two lists
   NodeList<T> *Union(NodeList<T> *nl);
@@ -206,11 +207,12 @@ template <typename T> void NodeList<T>::DeleteNode(Node<T> *n) {
   node_list_.erase(it);
 }
 
-template <typename T> void NodeList<T>::CatList(NodeList<T> *nl) {
+template <typename T> NodeList<T> *NodeList<T>::CatList(NodeList<T> *nl) {
   if (!nl || nl->node_list_.empty())
-    return;
+    return this;
   node_list_.insert(node_list_.end(), nl->node_list_.begin(),
                     nl->node_list_.end());
+  return this;
 }
 
 template <typename T> NodeList<T> *NodeList<T>::Union(NodeList<T> *nl) {

@@ -1,36 +1,53 @@
 #include "tiger/liveness/flowgraph.h"
-#include <map>
 
+extern frame::RegManager * reg_manager;
 namespace fg {
 
 void FlowGraphFactory::AssemFlowGraph() {
   /* TODO: Put your lab6 code here */
-  flowgraph_ = new graph::Graph<assem::Instr>;
-  std::map<temp::Label *, FNodePtr> label2fnode;
-  // record labelInstr to its FNode for further Jump
-  std::list<std::pair<assem::Instr *, FNodePtr>> jump2fnode;
-  FNodePtr last = nullptr;
-  for (auto instr : instr_list_->GetList()) {
-    auto cur = flowgraph_->NewNode(instr);
-    if (typeid(*instr) == typeid(assem::LabelInstr)) {
-      label2fnode[static_cast<assem::LabelInstr *>(instr)->label_] = cur;
-    } else if (typeid(*instr) == typeid(assem::OperInstr) && static_cast<assem::OperInstr *>(instr)->jumps_) {
-      // Jump OR Cjump
-      last = nullptr;
-      jump2fnode.emplace_back(instr, cur);
-    } else {
-      last = cur;
+  temp::Map * co=temp::Map::LayerMap(reg_manager->temp_map_, temp::Map::Name());
+  tab::Table<assem::Instr, FNode> instr_map;
+  FNodePtr pre=nullptr;
+  FNodePtr cur=nullptr;
+   for (auto p = instr_list_->GetList().begin(); p!=instr_list_->GetList().end(); p++) {
+    cur = flowgraph_->NewNode((*p));
+    instr_map.Enter((*p),cur);
+    if (pre) {
+      flowgraph_->AddEdge(pre, cur);
     }
-    if (last)
-      flowgraph_->AddEdge(last, cur);
+    // (*p)->Print(stderr,co);
+    assert(*p);
+    if (typeid(*(*p)) ==typeid(assem::LabelInstr)) {
+     label_map_->Enter(((assem::LabelInstr *) (*p))->label_,cur);
+    }
+    //存标号到点的映射，下一步把所有jump边都加入
+    if (typeid(*(*p)) == typeid(assem::OperInstr) && ((assem::OperInstr *) (*p))->assem_.find("jmp") != -1) {
+      pre = nullptr;
+    } else {
+      pre = cur;
+    }
   }
 
-  for (auto instr_fnode : jump2fnode) {
-    auto jump_instr = static_cast<assem::OperInstr *>(instr_fnode.first);
-    for (auto label : *jump_instr->jumps_->labels_) {
-      flowgraph_->AddEdge(instr_fnode.second, label2fnode[label]);
+  for (auto p = instr_list_->GetList().begin(); p!=instr_list_->GetList().end(); p++) {
+    if (typeid(*(*p)) == typeid(assem::OperInstr) && ((assem::OperInstr *) (*p))->jumps_) {
+      for (auto ptr = ((assem::OperInstr *) (*p))->jumps_->labels_->begin(); ptr!=((assem::OperInstr *) (*p))->jumps_->labels_->end(); ptr++) {
+        
+        FNodePtr jmpNode = instr_map.Look((*p));
+        FNodePtr labelNode = label_map_->Look((*ptr));
+        if (!labelNode){
+          printf("%s\n",(*ptr)->Name().c_str());
+          printf("addr:%p\n",(*ptr));
+          (*p)->Print(stderr,co);
+           label_map_->Dump([](temp::Label *t,  FNode *r) {
+    fprintf(stderr, "label %s  \n", t->Name().c_str());
+    printf("addr:%p\n",t);
+  });
+        }
+        flowgraph_->AddEdge(jmpNode, labelNode);
+      }
     }
   }
+  
 }
 
 } // namespace fg
@@ -39,31 +56,69 @@ namespace assem {
 
 temp::TempList *LabelInstr::Def() const {
   /* TODO: Put your lab6 code here */
-  return dst_;
+  temp::TempList * tmp=new temp::TempList();
+  return tmp;
 }
 
 temp::TempList *MoveInstr::Def() const {
   /* TODO: Put your lab6 code here */
-  return dst_;
+  temp::TempList * tmp=new temp::TempList();
+  if (!dst_) return tmp;
+  for (auto ptr=dst_->GetList().begin();ptr!=dst_->GetList().end();ptr++)
+  {
+    if ((*ptr)!= reg_manager->StackPointer())
+    {
+      tmp->Append((*ptr));
+    }
+  }
+  return tmp;
 }
 
 temp::TempList *OperInstr::Def() const {
   /* TODO: Put your lab6 code here */
-  return dst_;
+  temp::TempList * tmp=new temp::TempList();
+  if (!dst_) return tmp;
+  for (auto ptr=dst_->GetList().begin();ptr!=dst_->GetList().end();ptr++)
+  {
+    if ((*ptr)!= reg_manager->StackPointer())
+    {
+      tmp->Append((*ptr));
+    }
+  }
+  return tmp;
 }
 
 temp::TempList *LabelInstr::Use() const {
   /* TODO: Put your lab6 code here */
-  return src_;
+  temp::TempList * tmp=new temp::TempList();
+ return tmp;
 }
 
 temp::TempList *MoveInstr::Use() const {
   /* TODO: Put your lab6 code here */
-  return src_;
+  temp::TempList * tmp=new temp::TempList();
+  if (!src_) return tmp;
+  for (auto ptr=src_->GetList().begin();ptr!=src_->GetList().end();ptr++)
+  {
+    if ((*ptr)!= reg_manager->StackPointer())
+    {
+      tmp->Append((*ptr));
+    }
+  }
+  return tmp;
 }
 
 temp::TempList *OperInstr::Use() const {
   /* TODO: Put your lab6 code here */
-  return src_;
+  temp::TempList * tmp=new temp::TempList();
+  if (!src_) return tmp;
+  for (auto ptr=src_->GetList().begin();ptr!=src_->GetList().end();ptr++)
+  {
+    if ((*ptr)!= reg_manager->StackPointer())
+    {
+      tmp->Append((*ptr));
+    }
+  }
+  return tmp;
 }
 } // namespace assem
