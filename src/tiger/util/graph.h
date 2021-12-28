@@ -147,7 +147,7 @@ template <typename T> void Graph<T>::AddEdge(Node<T> *from, Node<T> *to) {
   assert(to);
   assert(from->my_graph_ == this);
   assert(to->my_graph_ == this);
-  if (from->GoesTo(to))
+  if (from->GoesTo(to) || from == to)
     return;
   to->preds_->node_list_.push_back(from);
   from->succs_->node_list_.push_back(to);
@@ -171,10 +171,10 @@ template <typename T> int Node<T>::OutDegree() {
 template <typename T> int Node<T>::Degree() { return InDegree() + OutDegree(); }
 
 template <typename T> NodeList<T> *Node<T>::Adj() {
-  NodeList<T> *adj_list = new NodeList<T>();
-  adj_list->CatList(succs_);
-  adj_list->CatList(preds_);
-  return adj_list;
+  // NodeList<T> *adj_list = new NodeList<T>();
+  // adj_list->CatList(succs_);
+  // adj_list->CatList(preds_);
+  return succs_;
 }
 
 template <typename T> NodeList<T> *Node<T>::Succ() { return succs_; }

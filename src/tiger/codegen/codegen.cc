@@ -478,7 +478,7 @@ temp::Temp *BinopExp::Munch(assem::InstrList &instr_list, std::string_view fs) {
     }
     case MUL_OP:{
       auto rax = reg_manager->GetRegister(0);
-      auto rdx = reg_manager->GetRegister(4);
+      auto rdx = reg_manager->GetRegister(3);
       instr_list.Append(
         new assem::MoveInstr(
           "movq `s0,%rax",

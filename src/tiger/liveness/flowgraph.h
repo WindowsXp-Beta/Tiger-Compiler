@@ -8,6 +8,11 @@
 
 namespace fg {
 
+/**
+ * assem::Instr is a node in the flow graph
+ * if instruction m can be followed by instruction n(jump or fall through)
+ * there will be an edge(m, n) in the graph
+ */
 using FNode = graph::Node<assem::Instr>;
 using FNodePtr = graph::Node<assem::Instr>*;
 using FNodeListPtr = graph::NodeList<assem::Instr>*;

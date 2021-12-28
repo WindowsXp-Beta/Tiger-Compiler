@@ -8,7 +8,6 @@
 #include "tiger/liveness/liveness.h"
 #include "tiger/regalloc/color.h"
 #include "tiger/util/graph.h"
-#include <set>
 #include <map>
 
 namespace ra {
@@ -25,66 +24,97 @@ public:
   Result(Result &&result) = delete;
   Result &operator=(const Result &result) = delete;
   Result &operator=(Result &&result) = delete;
-  ~Result(){};
+  ~Result() {
+    delete coloring_;
+    delete il_;
+  };
 };
 
 class RegAllocator {
   /* TODO: Put your lab6 code here */
-  public:
+public:
+  void showStatus();
+  RegAllocator(
+    frame::Frame *frame,
+    std::unique_ptr<cg::AssemInstr> assem_instr);
+  ~RegAllocator();
+  std::unique_ptr<Result> TransferResult() { return std::move(result_); }
+  assem::InstrList *CoalesceInstr();
   void RegAlloc();
-   std::unique_ptr<ra::Result> TransferResult() {
-    return std::move(result_);
-  }
-  RegAllocator(frame::Frame *frame,std::unique_ptr<cg::AssemInstr> asi){
-    result_=std::unique_ptr<ra::Result>(new Result());
-    frame_ = frame;
-    asi_=std::move(asi);
-    liveness=nullptr;
-    coloring=temp::Map::Empty();
-    activeMoves=new live::MoveList();
-    coalescedMoves=new live::MoveList();
-    constrainedMoves=new live::MoveList();
-    frozenMoves=new live::MoveList();
-  }
-  std::unique_ptr<ra::Result> result_;
-  std::unique_ptr<cg::AssemInstr> asi_;
-  frame::Frame *frame_;
-  live::LiveGraphFactory *liveness;
-  //
-  std::set<graph::Node<temp::Temp> *> spillWorkList, freezeWorkList, simplifyWorkList;
-  std::set<graph::Node<temp::Temp> *> coalescedNodes, spilledNodes, coloredNodes;
-  std::vector<graph::Node<temp::Temp> *> selectStack;
-  //
-  live::MoveList *workListMoves = nullptr, *activeMoves = nullptr, *coalescedMoves = nullptr, *constrainedMoves = nullptr, *frozenMoves = nullptr;
-  //
-  std::set<std::pair<graph::Node<temp::Temp> *, graph::Node<temp::Temp> *>> adjSet;
-  std::map<graph::Node<temp::Temp> *, std::set<graph::Node<temp::Temp> *>> adjList;
-  std::map<graph::Node<temp::Temp> *, int> degree;
-  std::map<graph::Node<temp::Temp> *, live::MoveList *> moveList;
-  std::map<graph::Node<temp::Temp> *, graph::Node<temp::Temp>*> alias;
-  temp::Map *coloring ;
-  //
+  void GarbageCollection();
   void Build();
-  void AddEdge(graph::Node<temp::Temp> *src,graph::Node<temp::Temp> *dst);
+  void AddEdge(live::INodePtr u, live::INodePtr v);
   void MakeWorklist();
-  live::MoveList *NodeMoves(graph::Node<temp::Temp> *node);
-  bool MoveRelated(graph::Node<temp::Temp> *node);
+  live::MoveList *NodeMoves(live::INodePtr node);
+  live::INodeListPtr Adjacent(live::INodePtr node);
+  bool MoveRelated(live::INodePtr node);
+  void DecrementDegree(live::INodePtr node);
   void Simplify();
-  graph::NodeList<temp::Temp> *Adjacent(graph::Node<temp::Temp> *node);
-  void DecrementDegree(graph::Node<temp::Temp> *node);
-  void EnableMoves(graph::NodeList<temp::Temp> *nodes);
+  void EnableMoves(live::INodeListPtr nodes);
   void Coalesce();
-  graph::Node<temp::Temp> *GetAlias(graph::Node<temp::Temp> *node);
-  void AddWorkList( graph::Node<temp::Temp> *node);
-  bool OK(graph::Node<temp::Temp> *t,graph::Node<temp::Temp> *r);
-  bool All_OK(graph::NodeList<temp::Temp> *nodes, graph::Node<temp::Temp> *r);
-  bool Conservative(graph::NodeList<temp::Temp> *nodes);
-  void Combine(graph::Node<temp::Temp> *u,graph::Node<temp::Temp> *v);
+  live::INodePtr GetAlias(live::INodePtr node);
+  void AddWorkList(live::INodePtr node);
+  bool OK(live::INodePtr v, live::INodePtr u);
+  bool Conservative(live::INodePtr u, live::INodePtr v);
+  void Combine(live::INodePtr u, live::INodePtr v);
   void Freeze();
-  void FreezeMoves(graph::Node<temp::Temp> *u);
+  void FreezeMoves(live::INodePtr u);
   void SelectSpill();
   void AssignColors();
-  cg::AssemInstr *RewriteProgram(frame::Frame *f, assem::InstrList *il);
+  void RewriteProgram();
+  temp::Map *AssignRegisters();
+
+private:
+  const int K = 15;
+  frame::Frame *frame_;
+  std::unique_ptr<cg::AssemInstr> assem_instr_;
+  std::unique_ptr<Result> result_;
+  //Since it doesn't have a default construct function
+  //and cannot be put into construction list
+  //I put it into the heap to avoid auto consturct
+  live::LiveGraphFactory *live_graph_factory_;
+  live::LiveGraph *live_graph;
+
+  //list of low-degree non-move-related nodes
+  live::INodeListPtr simplifyWorklist;
+  //low-degree move-related nodes
+  live::INodeListPtr freezeWorklist;
+  //high-degree nodes
+  live::INodeListPtr spillWorklist;
+  //nodes marked for spilling during this round; initially empty
+  live::INodeListPtr spilledNodes;
+  //Moves enabled for coalescing
+  live::MoveList *worklistMoves;
+  //moves not yet ready for coalescing
+  live::MoveList *activeMoves;
+  //moves that have been coalesced.
+  live::MoveList *coalescedMoves;
+  //moves whose source and target interfere
+  live::MoveList *constrainedMoves;
+  //moves that will no longer be considered for coalescing
+  live::MoveList *frozenMoves;
+  //registers that have been coalesced; when u←v is coalesced,
+  //vis added to this set and u put back on some work-list (or vice versa)
+  live::INodeListPtr coalescedNodes;
+  //nodes successfully colored
+  live::INodeListPtr coloredNodes;
+  //stack containing temporaries removed from the graph
+  live::INodeListPtr selectStack;
+  //the color chosen by the algorithm for a node
+  //for precolored nodes this is initialized to the given color
+  std::map<live::INodePtr, temp::Temp *> color;
+
+  //a mapping from a node to the list of moves it is associated with
+  std::map<live::INodePtr, live::MoveList *> movelist;
+
+  //a map recording node to their current degree
+  std::map<live::INodePtr, int> degree;
+
+  //a map recording node to its alias
+  std::map<live::INodePtr, live::INodePtr> alias;
+
+  std::deque<temp::Temp *> noSpillTemps;
+
 };
 
 } // namespace ra

@@ -37,3 +37,12 @@ _deps
 
 # MacOS
 .DS_Store
+
+# backup
+/*.bk
+
+# assembly
+*.s
+
+# executable
+*.out
