@@ -15,7 +15,7 @@ Ref: [Modern Compiler Implementation in C: Basic Techniques](https://www.amazon.
 
 **You may refer to this repo, but never COPY.** 
 
-**Like someone(@ [Gun9niR](https://github.com/Gun9niR/Gun9niR)) said, "It benefits you not for the scores, but for the thoughts and efforts you put into them."**
+**Like someone(@ [Gun9niR](https://github.com/Gun9niR)) said, "It benefits you not for the scores, but for the thoughts and efforts you put into them."**
 
 ## Contents
 
@@ -23,8 +23,8 @@ Ref: [Modern Compiler Implementation in C: Basic Techniques](https://www.amazon.
 
 ### Frontend
 
-- [lab1: Straight-line Program Interpreter](../../releases/tag/lab1-Straight-line)
-- [lab 2: Lexical Analysis](../../releases/tag/lab2-Lexical-Analysis)
+- [Lab 1: Straight-line Program Interpreter](../../releases/tag/lab1-Straight-line)
+- [Lab 2: Lexical Analysis](../../releases/tag/lab2-Lexical-Analysis)
 - [Lab 3: Parsing](../../releases/tag/lab3-Parsing)
 - [Lab 4: Type Checking](../../releases/tag/lab4-Type-Checking)
 
@@ -42,4 +42,4 @@ Ref: [Modern Compiler Implementation in C: Basic Techniques](https://www.amazon.
 
 ## Usage
 
-If you want to use it to compile your tiger codes. You may refer to README in branch tiger-compiler to see how to compile it.
+If you want to use it to compile your tiger codes. You may refer to GUIDE.md to see how to compile it.
